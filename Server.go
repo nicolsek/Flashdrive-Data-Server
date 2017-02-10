@@ -25,7 +25,7 @@ type Server struct {
 
 // createServer ... Creates a server and returns *Server is non-active.
 func createServer(Name string, ConnectionType string, PortL int) *Server {
-	server Server = new(Server)
+	server := new(Server)
 
 	//Set the name to the name
 	server.Name = Name
@@ -91,7 +91,7 @@ func debugServer(server *Server) {
 
 // readData ... Reads data from the incoming go connection and stores it into a byte array and closes the connection.
 func readData(conn *net.Conn) *[]byte {
-	data := make(byte[], 256)
+	data := make(byte, 512)
 	io.Copy(&data, conn)
 	data.Close()
 }
