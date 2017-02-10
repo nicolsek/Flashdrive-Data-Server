@@ -7,6 +7,7 @@ import (
 	"time"
 	"runtime"
 	"strconv"
+	"net"
 
 )
 
@@ -52,7 +53,7 @@ func getClientData(client *Client) []byte {
 	//Creates a single string for all the data
 	dataString := client.time + sep + client.OS + sep + client.hostName + sep + strconv.Itoa(client.cpuCount)
 
-	fmt.Printf("Data: \n%v", dataString)
+	//fmt.Printf("Data: \n%v", dataString)
 
 	//Take the slice of that into the data array
 	copy(data[:], dataString)
@@ -75,9 +76,7 @@ func createServer(IPv4 string, PortD int, ConnectionType string) *Server {
 
 // dialServer ... Dials the server and connects to it, will send information and then close the connection
 func dialServer(server *Server, data []byte) {
-	//conn, _ := net.Dial(server.ConnectionType, string(server.IPv4) + ":" + string(server.PortD))
-	//conn.Write(data)
-	//defer conn.Close()
-	
-	//fmt.Printf("Data: %v", string(data))
+	conn, _ := net.Dial(server.ConnectionType, string(server.IPv4) + ":" + string(server.PortD))
+	conn.Write(data)
+	defer conn.Close()
 }
