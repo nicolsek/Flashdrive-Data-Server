@@ -3,27 +3,24 @@ package main
 import ( 
 
 	"os"
-	"net"
+	"fmt"
 	"time"
 	"runtime"
+	"strconv"
 
 )
 
-var {
-	serverAddress := "192.168.1.1"
-}
-
 // main ... The main function?
-func main()
-	client Client = new(Client)
-	server := createServer(serverAddress, )
+func main() {
+	client := new(Client)
+	server := createServer("192.168.1.1", 8080, "TCP")
 
-	dialServer(server, getClientData())
+	dialServer(server, getClientData(client))
 }
 
 //Data regarding the client, will send to the server
 type Client struct {
-	time time.Time
+	time string
 	OS string
 	cpuCount int
 	hostName string
@@ -37,23 +34,25 @@ type Server struct {
 }
 
 // getClientData ... Gets the data to transmit to the server and sets it for the client
-func getClientData(client *Client) *[]byte {
+func getClientData(client *Client) []byte {
 	//Seperator to reference the end of a particular part of data
 	sep := "\n"
 	//Finding the time and date
-	client.time = Time.Now()
+	client.time = time.Now().String()
 	//Finding the OS
 	client.OS = runtime.GOOS
 	//Finding the hostName
 	hostName, _ := os.Hostname()
 	client.hostName = hostName
 	//Finding the cpu count
-	client.cpuCount = runtime.NumCpu()
+	client.cpuCount = runtime.NumCPU()
 
 	data := make([]byte, 512)
 
 	//Creates a single string for all the data
-	dataString := client.time + sep + client.OS + sep + client.hostName + sep + client.cpuCount
+	dataString := client.time + sep + client.OS + sep + client.hostName + sep + strconv.Itoa(client.cpuCount)
+
+	fmt.Printf("Data: \n%v", dataString)
 
 	//Take the slice of that into the data array
 	copy(data[:], dataString)
@@ -62,20 +61,23 @@ func getClientData(client *Client) *[]byte {
 }
 
 // createServer ... Creates a server with the properties of a server and returns it
-func createServer(IPV4 string, PortD int, ConnectionType string) *Server {
-	server Server = new(Server)
+func createServer(IPv4 string, PortD int, ConnectionType string) *Server {
+	server := new(Server)
 	//Sets the IPv4
-	server.IPV4 = IPV4
+	server.IPv4 = IPv4
 	//Sets the Port
 	server.PortD = PortD
 	//Sets the connectionType
 	server.ConnectionType = ConnectionType
+	
+	return server
 }
 
 // dialServer ... Dials the server and connects to it, will send information and then close the connection
-func dialServer(server *Server, data *[]byte) {
-	conn, _ := net.Dial(server.ConnectionType, "%v:%v", server.IPv4, server.PortD)
-	conn.Write(data)
-	defer conn.Close()
+func dialServer(server *Server, data []byte) {
+	//conn, _ := net.Dial(server.ConnectionType, string(server.IPv4) + ":" + string(server.PortD))
+	//conn.Write(data)
+	//defer conn.Close()
+	
+	//fmt.Printf("Data: %v", string(data))
 }
-
