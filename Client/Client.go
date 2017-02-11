@@ -1,37 +1,35 @@
-package main 
+package main
 
-import ( 
-
-	"os"
+import (
 	"fmt"
-	"time"
+	"net"
+	"os"
 	"runtime"
 	"strconv"
-	"net"
-
+	"time"
 )
 
 // main ... The main function?
 func main() {
 	client := new(Client)
-	server := createServer("192.168.1.1", 8080, "TCP")
+	server := createServer("localhost", 8080, "tcp")
 
 	dialServer(server, getClientData(client))
 }
 
 //Data regarding the client, will send to the server
 type Client struct {
-	time string
-	OS string
+	time     string
+	OS       string
 	cpuCount int
 	hostName string
 }
 
 //Data regarding how to connect to the server
 type Server struct {
-	IPv4 string
+	IPv4           string
 	ConnectionType string
-	PortD int
+	PortD          int
 }
 
 // getClientData ... Gets the data to transmit to the server and sets it for the client
@@ -53,7 +51,7 @@ func getClientData(client *Client) []byte {
 	//Creates a single string for all the data
 	dataString := client.time + sep + client.OS + sep + client.hostName + sep + strconv.Itoa(client.cpuCount)
 
-	//fmt.Printf("Data: \n%v", dataString)
+	fmt.Printf("Data: \n%v", dataString)
 
 	//Take the slice of that into the data array
 	copy(data[:], dataString)
@@ -70,13 +68,13 @@ func createServer(IPv4 string, PortD int, ConnectionType string) *Server {
 	server.PortD = PortD
 	//Sets the connectionType
 	server.ConnectionType = ConnectionType
-	
+
 	return server
 }
 
 // dialServer ... Dials the server and connects to it, will send information and then close the connection
 func dialServer(server *Server, data []byte) {
-	conn, _ := net.Dial(server.ConnectionType, string(server.IPv4) + ":" + string(server.PortD))
+	conn, _ := net.Dial(server.ConnectionType, string(server.IPv4)+":"+string(server.PortD))
 	conn.Write(data)
 	defer conn.Close()
 }
