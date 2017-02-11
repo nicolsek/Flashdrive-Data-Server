@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net"
 	"os"
+	"strings"
 )
 
 // main ... Main function?
@@ -91,20 +92,15 @@ func debugServer(server *Server) {
 }
 
 // readData ... Reads data from the incoming go connection and stores it into a byte array and closes the connection.
-func readData(conn net.Conn) []byte {
+func readData(conn net.Conn) {
 	data := make([]byte, 512)
 	data, _ = ioutil.ReadAll(conn)
-	return data
+
+	writeData(conn, data)
 }
 
 // writeData ... Writes data from the conn and data to a file with the name of the remote address and the data from the connection.
 func writeData(conn net.Conn, data []byte) {
-	file, err := os.Create(conn.RemoteAddr().String())
-	file.Write(data)
-	defer file.Close()
-
-	if err != nil {
-		os.Stderr.WriteString("Oops: " + err.Error() + "\n")
-		os.Exit(1)
-	}
+	//Seperates the port from the RemoteAddr and just takes the IP
+	ioutil.WriteFile(strings.Split(conn.RemoteAddr().String(), ":")[0], data, 0644)
 }
